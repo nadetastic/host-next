@@ -1,11 +1,31 @@
 import Head from 'next/head'
-import Image from 'next/image'
+import { useState } from 'react'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
-
+import {Storage,Auth} from 'aws-amplify'
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+
+  const [user, setUser] = useState(null)
+
+  const uploadFile = async () => {
+    try {
+      const result = await Storage.put('test.txt', 'Hello')
+      console.log('result', result)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
+
+  const signIn = async () => {
+    try {
+      const _user = await Auth.signIn(user.email,user.password)
+      console.log('user', _user)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
   return (
     <>
       <Head>
@@ -20,34 +40,16 @@ export default function Home() {
             Get started by editing&nbsp;
             <code className={styles.code}>pages/index.js</code>
           </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
+          
         </div>
 
         <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
+          <div>
+            <input type="text" placeholder="email" onChange={(e)=>setUser({...user,email:e.target.value})}/><br />
+            <input type="password" placeholder="password" onChange={(e)=>setUser({...user,password:e.target.value})}/><br />
+            <button onClick={signIn}>Sign In</button><br />
+            <button onClick={uploadFile}>Upload File</button>
+          </div>
         </div>
 
         <div className={styles.grid}>
